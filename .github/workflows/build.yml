@@ -25,10 +25,20 @@ jobs:
 
       - name: Build with PyInstaller
         run: |
-          pyinstaller --onefile RPS.py
+          if [[ "$RUNNER_OS" == "macOS" ]]; then
+            pyinstaller --windowed --onedir --name "RPS" RPS.py
+            mkdir -p dist-macos
+            cp -r dist/RPS.app dist-macos/
+          elif [[ "$RUNNER_OS" == "Windows" ]]; then
+            pyinstaller --onefile --windowed --name "RPS" RPS.py
+          else
+            pyinstaller --onefile --name "RPS" RPS.py
+          fi
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: RPS-${{ matrix.os }}
-          path: dist/*
+          path: |
+            dist/*
+            dist-macos/*
