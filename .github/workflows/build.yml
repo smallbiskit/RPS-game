@@ -23,17 +23,22 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Build with PyInstaller
+      - name: Build on Linux
+        if: runner.os == 'Linux'
         run: |
-          if [[ "$RUNNER_OS" == "macOS" ]]; then
-            pyinstaller --windowed --onedir --name "RPS" RPS.py
-            mkdir -p dist-macos
-            cp -r dist/RPS.app dist-macos/
-          elif [[ "$RUNNER_OS" == "Windows" ]]; then
-            pyinstaller --onefile --windowed --name "RPS" RPS.py
-          else
-            pyinstaller --onefile --name "RPS" RPS.py
-          fi
+          pyinstaller --onefile --name "RPS" RPS.py
+
+      - name: Build on Windows
+        if: runner.os == 'Windows'
+        run: |
+          pyinstaller --onefile --windowed --name "RPS" RPS.py
+
+      - name: Build on macOS
+        if: runner.os == 'macOS'
+        run: |
+          pyinstaller --windowed --onedir --name "RPS" RPS.py
+          mkdir -p dist-macos
+          cp -r dist/RPS.app dist-macos/
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
